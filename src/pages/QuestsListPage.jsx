@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Typography, Button, Box, CircularProgress, Alert,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Chip
+  Paper, IconButton, Chip
 } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import ToggleOffIcon from '@mui/icons-material/ToggleOff';
@@ -35,26 +36,23 @@ function QuestsListPage() {
         loadQuests();
     }, [loadQuests]);
 
-     const handleToggleStatus = async (questId, currentStatus) => {
+    const handleToggleStatus = async (questId, currentStatus) => {
         const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
         const originalQuests = [...quests]; // Store original state for potential rollback
         try {
             // Optimistic UI update
-             setQuests(prevQuests =>
+            setQuests(prevQuests =>
                 prevQuests.map(q =>
                     q.id === questId ? { ...q, status: newStatus } : q
                 )
             );
             await updateQuestStatus(questId, newStatus);
-            // If API call succeeds, the state is already updated.
-            // Optionally: Could re-fetch the specific quest or the whole list for consistency
-            // loadQuests(); // Re-fetch to confirm, or rely on optimistic update
-             console.log(`Quest ${questId} status toggled to ${newStatus}`);
+            console.log(`Quest ${questId} status toggled to ${newStatus}`);
         } catch (err) {
             setError(`Failed to update status for quest ${questId}.`);
-             console.error(err);
-             // Rollback UI on error
-             setQuests(originalQuests);
+            console.error(err);
+            // Rollback UI on error
+            setQuests(originalQuests);
         }
     };
 
@@ -62,17 +60,69 @@ function QuestsListPage() {
         switch (status) {
             case 'active': return <Chip label="Active" color="success" size="small" />;
             case 'inactive': return <Chip label="Inactive" color="default" size="small" />;
-             case 'draft': return <Chip label="Draft" color="warning" size="small" />;
-             case 'expired': return <Chip label="Expired" color="error" size="small" />;
+            case 'draft': return <Chip label="Draft" color="warning" size="small" />;
+            case 'expired': return <Chip label="Expired" color="error" size="small" />;
             default: return <Chip label={status} size="small" />;
         }
     };
+
+    const columns = [
+        { field: 'title', headerName: 'Title', width: 250 },
+        {
+            field: 'status',
+            headerName: 'Status',
+            width: 120,
+            renderCell: (params) => getStatusChip(params.value)
+        },
+        { field: 'difficulty', headerName: 'Difficulty', width: 120 },
+        {
+            field: 'startDate',
+            headerName: 'Start Date',
+            width: 180,
+            valueFormatter: (params) => dayjs(params.value).format('YYYY-MM-DD HH:mm')
+        },
+        {
+            field: 'endDate',
+            headerName: 'End Date',
+            width: 180,
+            valueFormatter: (params) => dayjs(params.value).format('YYYY-MM-DD HH:mm')
+        },
+        {
+            field: 'actions',
+            headerName: 'Actions',
+            width: 120,
+            sortable: false,
+            filterable: false,
+            renderCell: (params) => (
+                <>
+                    <IconButton
+                        aria-label="toggle status"
+                        color={params.row.status === 'active' ? 'success' : 'default'}
+                        onClick={() => handleToggleStatus(params.row.id, params.row.status)}
+                        title={params.row.status === 'active' ? 'Deactivate' : 'Activate'}
+                        size="small"
+                        sx={{ mr: 1 }}
+                    >
+                        {params.row.status === 'active' ? <ToggleOnIcon /> : <ToggleOffIcon />}
+                    </IconButton>
+                    <IconButton
+                        aria-label="edit"
+                        component={RouterLink}
+                        to={`/quests/${params.row.id}/edit`}
+                        size="small"
+                    >
+                        <EditIcon />
+                    </IconButton>
+                </>
+            )
+        }
+    ];
 
     return (
         <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h4" gutterBottom>
-                    Manage Quests
+                    Manage Quests ({quests.length})
                 </Typography>
                 <Button
                     variant="contained"
@@ -86,60 +136,29 @@ function QuestsListPage() {
 
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-            {loading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>
-            ) : (
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Title</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Difficulty</TableCell>
-                                <TableCell>Start Date</TableCell>
-                                <TableCell>End Date</TableCell>
-                                <TableCell>Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {quests.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={6} align="center">No quests found.</TableCell>
-                                </TableRow>
-                            ) : (
-                                quests.map((quest) => (
-                                    <TableRow key={quest.id}>
-                                        <TableCell component="th" scope="row">{quest.title}</TableCell>
-                                        <TableCell>{getStatusChip(quest.status)}</TableCell>
-                                        <TableCell>{quest.difficulty}</TableCell>
-                                        <TableCell>{dayjs(quest.startDate).format('YYYY-MM-DD HH:mm')}</TableCell>
-                                        <TableCell>{dayjs(quest.endDate).format('YYYY-MM-DD HH:mm')}</TableCell>
-                                        <TableCell>
-                                            <IconButton
-                                                aria-label="toggle status"
-                                                color={quest.status === 'active' ? 'success' : 'default'}
-                                                onClick={() => handleToggleStatus(quest.id, quest.status)}
-                                                title={quest.status === 'active' ? 'Deactivate' : 'Activate'}
-                                            >
-                                                {quest.status === 'active' ? <ToggleOnIcon /> : <ToggleOffIcon />}
-                                            </IconButton>
-                                            <IconButton
-                                                aria-label="edit"
-                                                component={RouterLink}
-                                                to={`/quests/${quest.id}/edit`}
-                                            >
-                                                <EditIcon />
-                                            </IconButton>
-                                            {/* Add Delete button if needed */}
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            )}
-            {/* TODO: Add Pagination controls if API supports it */}
+            <Paper sx={{ height: 600, width: '100%' }}>
+                <DataGrid
+                    rows={quests}
+                    columns={columns}
+                    pageSize={10}
+                    rowsPerPageOptions={[10, 25, 50]}
+                    loading={loading}
+                    disableSelectionOnClick
+                    getRowId={(row) => row.id}
+                    components={{
+                        NoRowsOverlay: () => (
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                                <Typography>No quests found.</Typography>
+                            </Box>
+                        ),
+                        LoadingOverlay: () => (
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                                <CircularProgress />
+                            </Box>
+                        )
+                    }}
+                />
+            </Paper>
         </Box>
     );
 }

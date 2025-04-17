@@ -8,6 +8,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import CollectionsIcon from '@mui/icons-material/Collections';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import CardMembershipIcon from '@mui/icons-material/CardMembership';
+import AlbumIcon from '@mui/icons-material/Album';
+import BadgeIcon from '@mui/icons-material/Badge';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -15,8 +19,12 @@ const drawerWidth = 240;
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+  { text: 'Passports', icon: <BadgeIcon />, path: '/passports' },
+  { text: 'Subscriptions', icon: <CardMembershipIcon />, path: '/subscriptions' },
+  { text: 'Collectibles', icon: <AlbumIcon />, path: '/collectibles' },
+  { text: 'Collections', icon: <CollectionsIcon />, path: '/collections' },
   { text: 'Quests', icon: <ChecklistIcon />, path: '/quests' },
-  { text: 'Collectibles', icon: <CollectionsIcon />, path: '/collectibles' },
+  { text: 'Mementos', icon: <PhotoLibraryIcon />, path: '/mementos' },
 ];
 
 function Layout(props) {
@@ -36,10 +44,23 @@ function Layout(props) {
 
   const drawer = (
     <div>
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          Legacy Admin
-        </Typography>
+      <Toolbar sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        py: 2 // Add more padding to the toolbar
+      }}>
+        {/* Replace this with your actual logo path */}
+        <Box
+          component="img"
+          src="/legacy-logo.svg"
+          alt="Brand Logo"
+          sx={{
+            height: 40, // Adjust the size as needed
+            width: 'auto',
+            maxWidth: '100%'
+          }}
+        />
       </Toolbar>
       <Divider />
       <List>

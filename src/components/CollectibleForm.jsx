@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import {
-    Box, TextField, Button, Grid, CircularProgress, Alert, Input, Typography, Avatar
+    Box, TextField, Button, Grid, CircularProgress, Alert, Input, Typography, Avatar, Stack, FormHelperText
 } from '@mui/material';
 
 function CollectibleForm({ initialData = {}, onSubmit, isSaving = false, error = '' }) {
@@ -57,76 +57,72 @@ function CollectibleForm({ initialData = {}, onSubmit, isSaving = false, error =
     };
 
     return (
-        <Box component="form" onSubmit={handleSubmit(handleFormSubmit)} noValidate sx={{ mt: 1 }}>
-            <Grid container spacing={3}>
-                <Grid item xs={12} sm={8}>
-                    <Controller
-                        name="name"
-                        control={control}
-                        rules={{ required: 'Collectible name is required' }}
-                        render={({ field }) => (
-                            <TextField
-                                {...field}
-                                required
-                                fullWidth
-                                label="Collectible Name"
-                                error={!!errors.name}
-                                helperText={errors.name?.message}
-                                sx={{ mb: 2 }}
-                            />
-                        )}
-                    />
+        <Box 
+            component="form" 
+            onSubmit={handleSubmit(handleFormSubmit)} 
+            noValidate 
+            sx={{ 
+                mt: 8,
+                maxWidth: 'md',
+            }}
+        >
+            <Stack spacing={3}>
+                <Controller
+                    name="name"
+                    control={control}
+                    rules={{ required: 'Collectible name is required' }}
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            required
+                            fullWidth
+                            label="Collectible Name"
+                            error={!!errors.name}
+                            helperText={errors.name?.message}
+                        />
+                    )}
+                />
 
+                <Box>
                     <Typography variant="subtitle1" gutterBottom>Upload Image</Typography>
                     <Input
                         type="file"
                         id="collectible-image"
-                        accept="image/png, image/jpeg, image/gif, image/webp" // Specify acceptable formats
-                        {...register('image', {
-                            // Add validation if needed (e.g., file size, required on create)
-                            validate: {
-                                // Example: required only if not editing OR if editing and no initial image
-                                // required: value => (!!initialData?.id && !!initialData?.imageUrl) ? true : (value && value.length > 0) || 'Image is required for new collectibles',
-                                // Example: File size validation (e.g., max 2MB)
-                                // fileSize: value => (!value || !value[0] || value[0].size <= 2 * 1024 * 1024) || 'File size should be less than 2MB',
-                            }
-                        })}
-                        sx={{ display: 'block', mb: 1 }} // Simple file input
+                        accept="image/png, image/jpeg, image/gif, image/webp"
+                        {...register('image')}
+                        sx={{ display: 'block', mb: 1 }}
                     />
                     {errors.image && <FormHelperText error>{errors.image.message}</FormHelperText>}
                     <Typography variant="caption" display="block" gutterBottom>
                         Recommended: Square image (e.g., 512x512px), PNG/WEBP preferred. Max 2MB.
                     </Typography>
+                </Box>
 
-                </Grid>
-                <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
-                     <Typography variant="subtitle2" gutterBottom>Preview</Typography>
-                     <Avatar
-                        src={previewUrl} // Use state variable for preview
+                <Box sx={{ textAlign: 'center' }}>
+                    <Typography variant="subtitle2" gutterBottom>Preview</Typography>
+                    <Avatar
+                        src={previewUrl}
                         alt={initialData?.name || 'Preview'}
                         variant="rounded"
                         sx={{ width: 150, height: 150, margin: 'auto' }}
                     >
-                        {/* Placeholder if no image */}
                         {!previewUrl && '?'}
                     </Avatar>
-                     {previewUrl && previewUrl !== initialData?.imageUrl && (
-                         <Typography variant="caption" display="block" sx={{mt: 1}}>(New image)</Typography>
-                     )}
-                </Grid>
-            </Grid>
+                    {previewUrl && previewUrl !== initialData?.imageUrl && (
+                        <Typography variant="caption" display="block" sx={{mt: 1}}>(New image)</Typography>
+                    )}
+                </Box>
 
+                {error && <Alert severity="error">{error}</Alert>}
 
-            {error && <Alert severity="error" sx={{ mt: 3 }}>{error}</Alert>}
-
-            <Button
-                type="submit"
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                disabled={isSaving}
-            >
-                {isSaving ? <CircularProgress size={24} /> : (initialData?.id ? 'Save Changes' : 'Create Collectible')}
-            </Button>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={isSaving}
+                >
+                    {isSaving ? <CircularProgress size={24} /> : (initialData?.id ? 'Save Changes' : 'Create Collectible')}
+                </Button>
+            </Stack>
         </Box>
     );
 }

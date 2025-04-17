@@ -1,33 +1,9 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { loginUser } from '../api/apiService'; // Import the placeholder API
-import { Box, TextField, Button, Typography, Container, Alert, CircularProgress } from '@mui/material';
+import React from 'react';
+import { Box, Typography, Container, Divider } from '@mui/material';
+import GoogleLoginButton from '../components/GoogleLoginButton';
+import UsernamePasswordLogin from '../components/UsernamePasswordLogin';
 
 function LoginPage() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const navigate = useNavigate();
-  const { login } = useAuth();
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const onSubmit = async (data) => {
-    setError('');
-    setLoading(true);
-    try {
-      // Use the placeholder login function
-      const token = await loginUser(data.username, data.password);
-      login(token); // Update auth context
-      navigate('/'); // Redirect to dashboard on successful login
-    } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
-      console.error("Login error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -38,47 +14,34 @@ function LoginPage() {
           alignItems: 'center',
         }}
       >
-        <Typography component="h1" variant="h5">
+        <Box
+          component="img"
+          src="/legacy-logo.svg"
+          alt="Legacy Logo"
+          sx={{
+            width: '200px',
+            mb: 4,
+          }}
+        />
+        <Typography component="h1" variant="h5" sx={{ mb: 4 }}>
           Legacy Admin Login
         </Typography>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="Username"
-            autoComplete="username"
-            autoFocus
-            {...register('username', { required: 'Username is required' })}
-            error={!!errors.username}
-            helperText={errors.username?.message}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            {...register('password', { required: 'Password is required' })}
-            error={!!errors.password}
-            helperText={errors.password?.message}
-          />
-          {error && <Alert severity="error" sx={{ width: '100%', mt: 2 }}>{error}</Alert>}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={loading}
-            sx={{ mt: 3, mb: 2 }}
-          >
-            {loading ? <CircularProgress size={24} /> : 'Sign In'}
-          </Button>
-           <Typography variant="body2" color="textSecondary" align="center">
-             (Demo: use admin / password)
-           </Typography>
+        
+        {/* Username/Password Login Section */}
+        <UsernamePasswordLogin />
+
+        {/* Divider with text */}
+        <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', my: 3 }}>
+          <Divider sx={{ flexGrow: 1 }} />
+          <Typography variant="body2" sx={{ px: 2, color: 'text.secondary' }}>
+            OR
+          </Typography>
+          <Divider sx={{ flexGrow: 1 }} />
+        </Box>
+
+        {/* Google Login Section */}
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <GoogleLoginButton />
         </Box>
       </Box>
     </Container>

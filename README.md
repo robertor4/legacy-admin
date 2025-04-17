@@ -4,7 +4,7 @@ A modern, responsive admin interface built with React and Material-UI for managi
 
 ## Features
 
-- 🔐 Secure authentication system
+- 🔐 Secure authentication system with Firebase integration
 - 📊 Dashboard with key metrics
 - 🎯 Quest management
   - Create, edit, and manage quests
@@ -22,10 +22,16 @@ A modern, responsive admin interface built with React and Material-UI for managi
 
 - React 19
 - Material-UI (MUI) v7
+  - @mui/material
+  - @mui/icons-material
+  - @mui/x-data-grid
+  - @mui/x-date-pickers
 - React Router v7
-- React Hook Form
+- React Hook Form v7
+- Firebase v11
+- Google OAuth integration
 - Day.js for date handling
-- Vite for build tooling
+- Vite v6 for build tooling
 
 ## Getting Started
 
@@ -47,7 +53,10 @@ cd legacy-admin
 npm install
 ```
 
-3. Start the development server:
+3. Set up environment variables:
+Create a `.env` file in the root directory with your Firebase and other configuration settings.
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
@@ -68,11 +77,14 @@ The built files will be in the `dist` directory.
 
 ```
 src/
-  ├── api/          # API service layer
+  ├── api/          # API service layer and Firebase configuration
+  ├── assets/       # Static assets and images
   ├── components/   # Reusable UI components
   ├── contexts/     # React contexts (auth, etc.)
   ├── pages/        # Page components
-  └── main.jsx      # Application entry point
+  ├── App.jsx       # Main application component
+  ├── main.jsx      # Application entry point
+  └── index.css     # Global styles
 ```
 
 ### Available Scripts
@@ -84,19 +96,12 @@ src/
 
 ## Authentication
 
-For demo purposes, use:
-- Username: `admin`
-- Password: `password`
+The application uses Firebase Authentication with Google OAuth integration. Configure your Firebase credentials in the `.env` file:
 
-In production, replace the authentication implementation in `src/api/apiService.js` with your actual backend integration.
-
-## API Integration
-
-The application is designed to work with a RESTful API. Current endpoints are mocked in `src/api/apiService.js`. Replace these with your actual API endpoints.
-
-Base API URL configuration is in `src/api/apiService.js`:
-```javascript
-const API_BASE_URL = '/api/admin/v1';
+```
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
 ```
 
 ## Contributing
