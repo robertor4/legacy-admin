@@ -72,7 +72,7 @@ const UsernamePasswordLogin = () => {
         type="submit"
         fullWidth
         variant="contained"
-        sx={{ mt: 3, mb: 2 }}
+        sx={{ mt: 3, mb: 2, py: 1.5 }}
         disabled={loading}
       >
         {loading ? <CircularProgress size={24} /> : 'Sign In'}

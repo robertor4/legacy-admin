@@ -26,6 +26,7 @@ const GoogleLoginButton = () => {
           '&:hover': {
             backgroundColor: '#3c6f59',
           },
+          py: 1.5
         }}
       >
         Debug Login (Bypass Google)
