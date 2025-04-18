@@ -8,6 +8,10 @@ http {
   sendfile        on;
   keepalive_timeout  65;
 
+  # Log to stdout and stderr
+  access_log /dev/stdout combined;
+  error_log /dev/stderr;
+
   server {
     listen       <%= ENV["PORT"] %>;
     server_name  localhost;
