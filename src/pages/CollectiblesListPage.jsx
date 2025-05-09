@@ -106,6 +106,7 @@ function CollectiblesListPage() {
             field: 'imageUrl_1',
             headerName: 'Image',
             width: 100,
+            flex: 0.5,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
                     <Avatar src={params.value} variant="rounded">
@@ -116,17 +117,17 @@ function CollectiblesListPage() {
             sortable: false,
             filterable: false,
         },
-        { field: 'name', headerName: 'Name', width: 200 },
-        { field: 'countryIso3', headerName: 'Country', width: 100 },
-        { field: 'artist', headerName: 'Artist', width: 150 },
-        { field: 'rarity', headerName: 'Rarity', width: 120 },
-        { field: 'type', headerName: 'Type', width: 120 },
-        { field: 'ownershipStatus', headerName: 'Status', width: 120 },
-        { field: 'id', headerName: 'ID', width: 250 },
+        { field: 'name', headerName: 'Name', flex: 2, minWidth: 200 },
+        { field: 'countryIso3', headerName: 'Country', flex: 1, minWidth: 100 },
+        { field: 'artist', headerName: 'Artist', flex: 1.5, minWidth: 150 },
+        { field: 'rarity', headerName: 'Rarity', flex: 1, minWidth: 120 },
+        { field: 'type', headerName: 'Type', flex: 1, minWidth: 120 },
+        { field: 'ownershipStatus', headerName: 'Status', flex: 1, minWidth: 120 },
         {
             field: 'actions',
             headerName: 'Actions',
-            width: 180,
+            flex: 1,
+            minWidth: 180,
             sortable: false,
             filterable: false,
             renderCell: (params) => (
